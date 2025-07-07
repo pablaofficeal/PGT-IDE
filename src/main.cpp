@@ -1,23 +1,25 @@
-#include <QApplication>
-#include <QMainWindow>
-#include <QTextEdit>
-#include <QPlainTextEdit>
-#include <QMenuBar>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QFile>
-#include <QTextStream>
-#include <QDockWidget>
-#include <QTreeView>
-#include <QFileSystemModel>
-#include <QSettings>
-#include <QToolBar>
-#include <QKeyEvent>
-#include <QProcess>
 #include <iostream>
-#include "syntaxhighlighter.h"
-#include "keypresshandler.h"
+#include <QApplication>
+#include <QDockWidget>
+#include <QFile>
+#include <QFileDialog>
+#include <QFileSystemModel>
+#include <QKeyEvent>
+#include <QMainWindow>
+#include <QMenuBar>
+#include <QMessageBox>
+#include <QPlainTextEdit>
+#include <QProcess>
+#include <QSettings>
+#include <QTextEdit>
+#include <QTextStream>
+#include <QToolBar>
+#include <QTreeView>
+#include <QInputDialog> // <-- Added this line
+
 #include "aftocomplet.h"
+#include "keypresshandler.h"
+#include "syntaxhighlighter.h"
 
 class CodeEditor : public QMainWindow
 {
@@ -37,19 +39,19 @@ public:
 
         autoComplete = new aftocomplet(editor, this);
 
-        // Создание меню
         QMenu *fileMenu = menuBar()->addMenu("Файл");
         QAction *newFile = fileMenu->addAction("Новый файл");
         QAction *openFile = fileMenu->addAction("Открыть файл");
         QAction *openFolder = fileMenu->addAction("Открыть папку");
         QAction *saveFile = fileMenu->addAction("Сохранить файл");
+        QAction *setings = fileMenu->addAction("Настройки");
 
         connect(newFile, &QAction::triggered, this, &CodeEditor::createNewFile);
         connect(openFile, &QAction::triggered, this, &CodeEditor::openFile);
         connect(openFolder, &QAction::triggered, this, &CodeEditor::openFolder);
         connect(saveFile, &QAction::triggered, this, &CodeEditor::saveFile);
+        connect(setings, &QAction::triggered, this, &CodeEditor::Setings); // <-- Fixed slot name
 
-        // Боковая панель с деревом файлов
         fileTreeDock = new QDockWidget("Файлы", this);
         fileTree = new QTreeView(fileTreeDock);
         fileModel = new QFileSystemModel(this);
@@ -59,9 +61,8 @@ public:
 
         connect(fileTree, &QTreeView::doubleClicked, this, &CodeEditor::openFileFromTree);
 
-        // Терминал
         terminal = new QPlainTextEdit(this);
-        terminal->setReadOnly(false); // Разрешаем ввод текста
+        terminal->setReadOnly(false);
         terminal->setPlaceholderText("Введите команду и нажмите Enter...");
         QDockWidget *terminalDock = new QDockWidget("Терминал", this);
         terminalDock->setWidget(terminal);
@@ -69,7 +70,6 @@ public:
 
         connect(terminal, &QPlainTextEdit::textChanged, this, &CodeEditor::onTerminalTextChanged);
 
-        // Панель инструментов
         QToolBar *toolBar = addToolBar("Инструменты");
         QAction *buildAction = toolBar->addAction("Собрать");
         QAction *runAction = toolBar->addAction("Запустить");
@@ -77,7 +77,6 @@ public:
         connect(buildAction, &QAction::triggered, this, &CodeEditor::buildProject);
         connect(runAction, &QAction::triggered, this, &CodeEditor::runProject);
 
-        // Загрузка последней папки
         loadLastFolder();
     }
 
@@ -102,7 +101,10 @@ private slots:
                                       "  start theme dark - включить тёмную тему\n"
                                       "  start theme light - включить светлую тему\n"
                                       "  start theme dark blue - включить синюю тёмную тему\n"
-                                      "  start theme dracula - включить тему Dracula\n");
+                                      "  start theme dracula - включить тему Dracula\n"
+                                      "  build - собрать проект\n"
+                                      "  run - запустить проект\n"
+                                      "  clear - очистить терминал\n");
         }
         else if (command == "start theme dark")
         {
@@ -123,6 +125,20 @@ private slots:
         {
             applyDraculaTheme();
             terminal->appendPlainText("Тема Dracula активирована.");
+        }
+        else if (command == "build")
+        {
+            buildProject();
+            terminal->appendPlainText("Проект собран.");
+        }
+        else if (command == "run")
+        {
+            runProject();
+            terminal->appendPlainText("Проект запущен.");
+        }
+        else if (command == "clear")
+        {
+            terminal->clear();
         }
         else
         {
@@ -177,6 +193,7 @@ private slots:
 
         fileModel->setRootPath(dir);
         fileTree->setRootIndex(fileModel->index(dir));
+        currentFolder = dir; // <-- Make sure to set currentFolder
     }
 
     void loadLastFolder()
@@ -187,6 +204,7 @@ private slots:
         {
             fileModel->setRootPath(lastPath);
             fileTree->setRootIndex(fileModel->index(lastPath));
+            currentFolder = lastPath; // <-- Make sure to set currentFolder
         }
     }
 
@@ -196,6 +214,30 @@ private slots:
         if (fileInfo.isFile())
         {
             loadFile(fileInfo.filePath());
+        }
+    }
+
+    void Setings() // <-- Slot name fixed
+    {
+        QString theme;
+        theme = QInputDialog::getItem(this, "Выберите тему", "Выберите тему:",
+                                      {"Тёмная тема", "Светлая тема", "Синяя тёмная тема", "Тема Dracula"}, 0, false);
+
+        if (theme == "Тёмная тема")
+        {
+            applyDarkTheme();
+        }
+        else if (theme == "Светлая тема")
+        {
+            applyLightTheme();
+        }
+        else if (theme == "Синяя тёмная тема")
+        {
+            applyDarkBlueTheme();
+        }
+        else if (theme == "Тема Dracula")
+        {
+            applyDraculaTheme();
         }
     }
 
