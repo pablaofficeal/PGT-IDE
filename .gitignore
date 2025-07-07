@@ -1,4 +1,3 @@
-# Build artifacts
 /build/
 /cmake-build-*/
 /CMakeFiles/
@@ -12,12 +11,10 @@
 /*.cmake
 /*.log
 
-# IDE settings
 /.idea/
 /.vscode/
 /*.iml
 *lib
 
-# Autogen
 /untitled20_autogen/
 /*.moc
