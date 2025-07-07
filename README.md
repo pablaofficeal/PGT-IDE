@@ -2,7 +2,7 @@
 
 Pabla IDE — это простая среда разработки на Qt для редактирования, подсветки синтаксиса, управления файлами и сборки CMake-проектов.
 
-## Скачать V-0.0 <a>https://github.com/pablaofficeal/PGT-IDEA/releases</a>
+## Скачать V-0.0 <a>https://github.com/pablaofficeal/PGT-IDEA/releases/tag/V-0.1</a>
 
 ## Возможности
 
