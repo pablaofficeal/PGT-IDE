@@ -22,4 +22,4 @@ private:
     QTextEdit *editor;
 };
 
-#endif // KEYPRESSHANDLER_H
+#endif 
