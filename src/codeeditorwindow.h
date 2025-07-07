@@ -45,4 +45,4 @@ private:
     QString currentFolder;
 };
 
-#endif // CODEEDITORWINDOW_H
+#endif
