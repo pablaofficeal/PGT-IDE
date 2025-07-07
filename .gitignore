@@ -1,0 +1,23 @@
+# Build artifacts
+/build/
+/cmake-build-*/
+/CMakeFiles/
+/*.o
+/*.obj
+/*.exe
+/*.dll
+/*.a
+/*.so
+/*.ninja*
+/*.cmake
+/*.log
+
+# IDE settings
+/.idea/
+/.vscode/
+/*.iml
+*lib
+
+# Autogen
+/untitled20_autogen/
+/*.moc

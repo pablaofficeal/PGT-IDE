@@ -1,0 +1,10 @@
+{
+  "dark": {
+    "editor_bg": "#2b2b2b",
+    "editor_fg": "#ffffff"
+  },
+  "dracula": {
+    "editor_bg": "#0e0056",
+    "editor_fg": "#ff79c6"
+  }
+}

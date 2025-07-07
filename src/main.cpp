@@ -4,6 +4,7 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QFileSystemModel>
+#include <QInputDialog> // <-- Added this line
 #include <QKeyEvent>
 #include <QMainWindow>
 #include <QMenuBar>
@@ -15,11 +16,11 @@
 #include <QTextStream>
 #include <QToolBar>
 #include <QTreeView>
-#include <QInputDialog> // <-- Added this line
-
 #include "aftocomplet.h"
 #include "keypresshandler.h"
 #include "syntaxhighlighter.h"
+#include <fstream>
+#include <string>
 
 class CodeEditor : public QMainWindow
 {
@@ -94,6 +95,7 @@ private slots:
 
     void processCommand(const QString &command)
     {
+
         if (command == "help")
         {
             terminal->appendPlainText("Доступные команды:\n"
@@ -239,6 +241,27 @@ private slots:
         {
             applyDraculaTheme();
         }
+
+        QString language;
+        language = QInputDialog::getItem(this, "Выберите язык", "Выберите язык:",
+                                         {"Русский", "Английский"}, 0, false);
+        if (language == "Русский")
+        {
+            // setLanguage("Russian");
+        }
+        else if (language == "Английский")
+        {
+            // setLanguage("English");
+        }
+
+        terminal->appendPlainText("Настройки сохранены.");
+
+
+        QSettings settings("PablaIDE", "CodeEditor");
+        settings.setValue("lastFolderPath", currentFolder); // <-- Save current folder
+        settings.setValue("theme", theme);
+        terminal->appendPlainText("Настройки сохранены.");
+        loadLastFolder(); // <-- Load last folder
     }
 
     void loadFile(const QString &fileName)
