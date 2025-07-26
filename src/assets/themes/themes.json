@@ -1,10 +1,194 @@
 {
-  "dark": {
-    "editor_bg": "#2b2b2b",
-    "editor_fg": "#ffffff"
-  },
-  "dracula": {
-    "editor_bg": "#0e0056",
-    "editor_fg": "#ff79c6"
+  "themes": {
+    "Тёмная тема": {
+      "name": "Тёмная тема",
+      "description": "Классическая тёмная тема",
+      "styles": {
+        "QTextEdit": {
+          "background-color": "#2b2b2b",
+          "color": "#ffffff"
+        },
+        "QTreeView": {
+          "background-color": "#2b2b2b",
+          "color": "#ffffff"
+        },
+        "QPlainTextEdit": {
+          "background-color": "#2b2b2b",
+          "color": "#ffffff"
+        },
+        "QMainWindow": {
+          "background-color": "#2b2b2b",
+          "color": "#ffffff"
+        },
+        "QMenuBar": {
+          "background-color": "#3c3c3c",
+          "color": "#ffffff"
+        },
+        "QMenu": {
+          "background-color": "#3c3c3c",
+          "color": "#ffffff"
+        },
+        "QToolBar": {
+          "background-color": "#3c3c3c",
+          "color": "#ffffff"
+        },
+        "QDockWidget": {
+          "background-color": "#2b2b2b",
+          "color": "#ffffff"
+        }
+      }
+    },
+    "Светлая тема": {
+      "name": "Светлая тема",
+      "description": "Классическая светлая тема",
+      "styles": {
+        "QTextEdit": {
+          "background-color": "#ffffff",
+          "color": "#000000"
+        },
+        "QTreeView": {
+          "background-color": "#ffffff",
+          "color": "#000000"
+        },
+        "QPlainTextEdit": {
+          "background-color": "#ffffff",
+          "color": "#000000"
+        },
+        "QMainWindow": {
+          "background-color": "#ffffff",
+          "color": "#000000"
+        },
+        "QMenuBar": {
+          "background-color": "#f0f0f0",
+          "color": "#000000"
+        },
+        "QMenu": {
+          "background-color": "#f0f0f0",
+          "color": "#000000"
+        },
+        "QToolBar": {
+          "background-color": "#f0f0f0",
+          "color": "#000000"
+        },
+        "QDockWidget": {
+          "background-color": "#ffffff",
+          "color": "#000000"
+        }
+      }
+    },
+    "Синяя тёмная тема": {
+      "name": "Синяя тёмная тема",
+      "description": "Тёмная тема с синими акцентами",
+      "styles": {
+        "QTextEdit": {
+          "background-color": "#1e1e2f",
+          "color": "#dcdcdc"
+        },
+        "QTreeView": {
+          "background-color": "#1e1e2f",
+          "color": "#dcdcdc"
+        },
+        "QPlainTextEdit": {
+          "background-color": "#1e1e2f",
+          "color": "#dcdcdc"
+        },
+        "QMainWindow": {
+          "background-color": "#1e1e2f",
+          "color": "#dcdcdc"
+        },
+        "QMenuBar": {
+          "background-color": "#2d2d3f",
+          "color": "#dcdcdc"
+        },
+        "QMenu": {
+          "background-color": "#2d2d3f",
+          "color": "#dcdcdc"
+        },
+        "QToolBar": {
+          "background-color": "#2d2d3f",
+          "color": "#dcdcdc"
+        },
+        "QDockWidget": {
+          "background-color": "#1e1e2f",
+          "color": "#dcdcdc"
+        }
+      }
+    },
+    "Тема Dracula": {
+      "name": "Тема Dracula",
+      "description": "Тема в стиле Dracula",
+      "styles": {
+        "QTextEdit": {
+          "background-color": "rgb(14, 0, 86)",
+          "color": "rgb(255, 255, 255)"
+        },
+        "QTreeView": {
+          "background-color": "rgb(14, 0, 86)",
+          "color": "rgb(255, 255, 255)"
+        },
+        "QPlainTextEdit": {
+          "background-color": "rgb(14, 0, 86)",
+          "color": "rgb(255, 255, 255)"
+        },
+        "QMainWindow": {
+          "background-color": "rgb(14, 0, 86)",
+          "color": "rgb(255, 255, 255)"
+        },
+        "QMenuBar": {
+          "background-color": "rgb(20, 0, 100)",
+          "color": "rgb(255, 255, 255)"
+        },
+        "QMenu": {
+          "background-color": "rgb(20, 0, 100)",
+          "color": "rgb(255, 255, 255)"
+        },
+        "QToolBar": {
+          "background-color": "rgb(20, 0, 100)",
+          "color": "rgb(255, 255, 255)"
+        },
+        "QDockWidget": {
+          "background-color": "rgb(14, 0, 86)",
+          "color": "rgb(255, 255, 255)"
+        }
+      }
+    },
+    "Зелёная тема": {
+      "name": "Зелёная тема",
+      "description": "Тема с зелёными акцентами",
+      "styles": {
+        "QTextEdit": {
+          "background-color": "#1a2e1a",
+          "color": "#90ee90"
+        },
+        "QTreeView": {
+          "background-color": "#1a2e1a",
+          "color": "#90ee90"
+        },
+        "QPlainTextEdit": {
+          "background-color": "#1a2e1a",
+          "color": "#90ee90"
+        },
+        "QMainWindow": {
+          "background-color": "#1a2e1a",
+          "color": "#90ee90"
+        },
+        "QMenuBar": {
+          "background-color": "#2a3e2a",
+          "color": "#90ee90"
+        },
+        "QMenu": {
+          "background-color": "#2a3e2a",
+          "color": "#90ee90"
+        },
+        "QToolBar": {
+          "background-color": "#2a3e2a",
+          "color": "#90ee90"
+        },
+        "QDockWidget": {
+          "background-color": "#1a2e1a",
+          "color": "#90ee90"
+        }
+      }
+    }
   }
 }

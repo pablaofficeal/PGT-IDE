@@ -26,7 +26,8 @@ def main():
     cmake_command = (
         f'cmake -S "{project_dir}" -B "{build_dir}" '
         f'-G "Ninja" -DCMAKE_PREFIX_PATH="C:/Qt/6.9.1/mingw_64" '
-        f'-DCMAKE_CXX_STANDARD=20'
+        f'-DCMAKE_CXX_STANDARD=20 -DCMAKE_C_COMPILER="C:/gcc2/mingw64/bin/gcc.exe" '
+        f'-DCMAKE_CXX_COMPILER="C:/gcc2/mingw64/bin/g++.exe"'
     )
     print("Генерация файлов сборки...")
     run_command(cmake_command)

@@ -21,6 +21,8 @@ add_executable(untitled20
         src/syntaxhighlighter.cpp
         src/keypresshandler.cpp
         src/aftocomplet.cpp
+        src/thememanager.cpp
+        src/languagemanager.cpp
 )
 target_link_libraries(untitled20
   Qt::Core
@@ -55,4 +57,34 @@ if (WIN32 AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
                 "${QT_INSTALL_PATH}/bin/Qt6${QT_LIB}${DEBUG_SUFFIX}.dll"
                 "$<TARGET_FILE_DIR:${PROJECT_NAME}>")
     endforeach(QT_LIB)
+    
+    # Копирование файлов тем
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/assets/themes/")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+            "${CMAKE_SOURCE_DIR}/src/assets/themes/themes.json"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/assets/themes/")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+            "${CMAKE_SOURCE_DIR}/src/assets/themes/README.md"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/assets/themes/")
+    
+    # Копирование файлов языков
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/assets/language/")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+            "${CMAKE_SOURCE_DIR}/src/assets/language/language_ru.json"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/assets/language/")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+            "${CMAKE_SOURCE_DIR}/src/assets/language/language_en.json"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/assets/language/")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+            "${CMAKE_SOURCE_DIR}/src/assets/language/README.md"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/assets/language/")
 endif()

@@ -1,0 +1,68 @@
+{
+  "interface": {
+    "window_title": "Pabla IDE",
+    "file_menu": "Файл",
+    "new_file": "Новый файл",
+    "open_file": "Открыть файл",
+    "save_file": "Сохранить файл",
+    "open_folder": "Открыть папку",
+    "settings": "Настройки",
+    "exit": "Выход",
+    "edit_menu": "Правка",
+    "undo": "Отменить",
+    "redo": "Повторить",
+    "cut": "Вырезать",
+    "copy": "Копировать",
+    "paste": "Вставить",
+    "build_menu": "Сборка",
+    "build": "Собрать",
+    "run": "Запустить",
+    "help_menu": "Помощь",
+    "about": "О программе",
+    "terminal_placeholder": "Введите команду...",
+    "file_tree_title": "Файлы проекта"
+  },
+  "dialogs": {
+    "settings_title": "Настройки Pabla IDE",
+    "theme_label": "Выберите тему интерфейса:",
+    "language_label": "Выберите язык интерфейса:",
+    "ok_button": "OK",
+    "cancel_button": "Отмена",
+    "error_title": "Ошибка",
+    "warning_title": "Предупреждение",
+    "info_title": "Информация"
+  },
+  "messages": {
+    "file_open_error": "Не удалось открыть файл.",
+    "folder_required": "Сначала откройте папку проекта.",
+    "project_building": "Сборка проекта...",
+    "project_running": "Запуск проекта...",
+    "project_built": "Проект собран.",
+    "project_started": "Проект запущен.",
+    "theme_applied": "Тема применена: ",
+    "theme_activated": "Тема '{0}' активирована.",
+    "theme_not_found": "Тема '{0}' не найдена. Используйте команду 'themes' для списка доступных тем.",
+    "settings_saved": "Настройки сохранены.",
+    "unknown_command": "Неизвестная команда. Введите 'help' для списка команд.",
+    "no_themes": "Нет доступных тем.",
+    "available_themes": "Доступные темы:",
+    "language_changed": "Язык изменен на: "
+  },
+  "commands": {
+    "help_title": "Доступные команды:",
+    "help_help": "help - показать список команд",
+    "help_themes": "themes - показать доступные темы",
+    "help_start_theme": "start theme <название> - включить тему",
+    "help_language": "language <код> - изменить язык (ru/en)",
+    "help_build": "build - собрать проект",
+    "help_run": "run - запустить проект",
+    "help_clear": "clear - очистить терминал",
+    "available_themes_list": "Доступные темы:",
+    "available_languages": "Доступные языки:",
+    "languages": "languages - показать доступные языки"
+  },
+  "languages": {
+    "ru": "Русский",
+    "en": "English"
+  }
+}

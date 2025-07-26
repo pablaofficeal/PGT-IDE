@@ -1,0 +1,68 @@
+{
+  "interface": {
+    "window_title": "Pabla IDE",
+    "file_menu": "File",
+    "new_file": "New File",
+    "open_file": "Open File",
+    "save_file": "Save File",
+    "open_folder": "Open Folder",
+    "settings": "Settings",
+    "exit": "Exit",
+    "edit_menu": "Edit",
+    "undo": "Undo",
+    "redo": "Redo",
+    "cut": "Cut",
+    "copy": "Copy",
+    "paste": "Paste",
+    "build_menu": "Build",
+    "build": "Build",
+    "run": "Run",
+    "help_menu": "Help",
+    "about": "About",
+    "terminal_placeholder": "Enter command...",
+    "file_tree_title": "Project Files"
+  },
+  "dialogs": {
+    "settings_title": "Pabla IDE Settings",
+    "theme_label": "Select interface theme:",
+    "language_label": "Select interface language:",
+    "ok_button": "OK",
+    "cancel_button": "Cancel",
+    "error_title": "Error",
+    "warning_title": "Warning",
+    "info_title": "Information"
+  },
+  "messages": {
+    "file_open_error": "Failed to open file.",
+    "folder_required": "Please open a project folder first.",
+    "project_building": "Building project...",
+    "project_running": "Running project...",
+    "project_built": "Project built.",
+    "project_started": "Project started.",
+    "theme_applied": "Theme applied: ",
+    "theme_activated": "Theme '{0}' activated.",
+    "theme_not_found": "Theme '{0}' not found. Use 'themes' command for available themes list.",
+    "settings_saved": "Settings saved.",
+    "unknown_command": "Unknown command. Type 'help' for command list.",
+    "no_themes": "No themes available.",
+    "available_themes": "Available themes:",
+    "language_changed": "Language changed to: "
+  },
+  "commands": {
+    "help_title": "Available commands:",
+    "help_help": "help - show command list",
+    "help_themes": "themes - show available themes",
+    "help_start_theme": "start theme <name> - apply theme",
+    "help_language": "language <code> - change language (ru/en)",
+    "help_build": "build - build project",
+    "help_run": "run - run project",
+    "help_clear": "clear - clear terminal",
+    "available_themes_list": "Available themes:",
+    "available_languages": "Available languages:",
+    "languages": "languages - show available languages"
+  },
+  "languages": {
+    "ru": "Русский",
+    "en": "English"
+  }
+} 

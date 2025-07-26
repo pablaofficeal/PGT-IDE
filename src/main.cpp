@@ -5,6 +5,13 @@
 #include <QFileDialog>
 #include <QFileSystemModel>
 #include <QInputDialog> // <-- Added this line
+#include <QDialog>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QComboBox>
+#include <QPushButton>
+#include <QDialogButtonBox>
 #include <QKeyEvent>
 #include <QMainWindow>
 #include <QMenuBar>
@@ -19,8 +26,90 @@
 #include "aftocomplet.h"
 #include "keypresshandler.h"
 #include "syntaxhighlighter.h"
+#include "thememanager.h"
+#include "languagemanager.h"
 #include <fstream>
 #include <string>
+
+class SettingsDialog : public QDialog
+{
+    Q_OBJECT
+
+public:
+    SettingsDialog(ThemeManager *themeManager, LanguageManager *languageManager, QWidget *parent = nullptr)
+        : QDialog(parent), m_themeManager(themeManager), m_languageManager(languageManager)
+    {
+        setWindowTitle(m_languageManager->tr("settings_title", "dialogs"));
+        setModal(true);
+        resize(400, 300);
+
+        QVBoxLayout *mainLayout = new QVBoxLayout(this);
+
+        // Секция выбора темы
+        QLabel *themeLabel = new QLabel(m_languageManager->tr("theme_label", "dialogs"), this);
+        mainLayout->addWidget(themeLabel);
+
+        m_themeComboBox = new QComboBox(this);
+        QStringList themes = m_themeManager->getAvailableThemes();
+        for (const QString &theme : themes) {
+            QString description = m_themeManager->getThemeDescription(theme);
+            if (!description.isEmpty()) {
+                m_themeComboBox->addItem(theme + " - " + description, theme);
+            } else {
+                m_themeComboBox->addItem(theme, theme);
+            }
+        }
+        mainLayout->addWidget(m_themeComboBox);
+
+        // Секция выбора языка
+        QLabel *languageLabel = new QLabel(m_languageManager->tr("language_label", "dialogs"), this);
+        mainLayout->addWidget(languageLabel);
+
+        m_languageComboBox = new QComboBox(this);
+        QStringList languages = m_languageManager->getAvailableLanguages();
+        for (const QString &lang : languages) {
+            QString name = m_languageManager->getLanguageName(lang);
+            m_languageComboBox->addItem(name, lang);
+        }
+        mainLayout->addWidget(m_languageComboBox);
+
+        // Кнопки
+        QDialogButtonBox *buttonBox = new QDialogButtonBox(
+            QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
+        connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
+        connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
+        mainLayout->addWidget(buttonBox);
+
+        // Предварительный просмотр темы
+        connect(m_themeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
+                this, &SettingsDialog::previewTheme);
+    }
+
+    QString getSelectedTheme() const
+    {
+        return m_themeComboBox->currentData().toString();
+    }
+
+    QString getSelectedLanguage() const
+    {
+        return m_languageComboBox->currentData().toString();
+    }
+
+private slots:
+    void previewTheme()
+    {
+        QString themeName = getSelectedTheme();
+        if (!themeName.isEmpty()) {
+            m_themeManager->applyTheme(themeName);
+        }
+    }
+
+private:
+    ThemeManager *m_themeManager;
+    LanguageManager *m_languageManager;
+    QComboBox *m_themeComboBox;
+    QComboBox *m_languageComboBox;
+};
 
 class CodeEditor : public QMainWindow
 {
@@ -78,6 +167,26 @@ public:
         connect(buildAction, &QAction::triggered, this, &CodeEditor::buildProject);
         connect(runAction, &QAction::triggered, this, &CodeEditor::runProject);
 
+        // Инициализация менеджеров
+        themeManager = new ThemeManager(this);
+        languageManager = new LanguageManager(this);
+
+        // Загружаем сохраненные настройки
+        QSettings settings("PablaIDE", "CodeEditor");
+        QString savedTheme = settings.value("theme", "").toString();
+        QString savedLanguage = settings.value("language", "ru").toString();
+        
+        if (!savedTheme.isEmpty() && themeManager->themeExists(savedTheme)) {
+            themeManager->applyTheme(savedTheme);
+        }
+        
+        if (languageManager->languageExists(savedLanguage)) {
+            languageManager->applyLanguage(savedLanguage);
+        }
+        
+        // Обновляем интерфейс с новым языком
+        updateInterfaceLanguage();
+
         loadLastFolder();
     }
 
@@ -88,55 +197,98 @@ private slots:
         if (text.endsWith("\n"))
         {                                     // Проверяем, нажата ли клавиша Enter
             QString command = text.trimmed(); // Убираем лишние пробелы и символы новой строки
-            terminal->clear();                // Очищаем терминал после ввода команды
+            
+            // Очищаем терминал перед выполнением команды
+            terminal->clear();
+            
             processCommand(command);          // Обрабатываем команду
         }
     }
 
     void processCommand(const QString &command)
     {
-
         if (command == "help")
         {
-            terminal->appendPlainText("Доступные команды:\n"
-                                      "  help - показать список команд\n"
-                                      "  start theme dark - включить тёмную тему\n"
-                                      "  start theme light - включить светлую тему\n"
-                                      "  start theme dark blue - включить синюю тёмную тему\n"
-                                      "  start theme dracula - включить тему Dracula\n"
-                                      "  build - собрать проект\n"
-                                      "  run - запустить проект\n"
-                                      "  clear - очистить терминал\n");
+            QString helpText = languageManager->tr("help_title", "commands") + "\n"
+                              "  " + languageManager->tr("help_help", "commands") + "\n"
+                              "  " + languageManager->tr("help_themes", "commands") + "\n"
+                              "  " + languageManager->tr("help_start_theme", "commands") + "\n"
+                              "  " + languageManager->tr("help_language", "commands") + "\n"
+                              "  " + languageManager->tr("help_build", "commands") + "\n"
+                              "  " + languageManager->tr("help_run", "commands") + "\n"
+                              "  " + languageManager->tr("help_clear", "commands") + "\n";
+            
+            QStringList themes = themeManager->getAvailableThemes();
+            if (!themes.isEmpty()) {
+                helpText += "  " + languageManager->tr("available_themes_list", "commands") + "\n";
+                for (const QString &theme : themes) {
+                    helpText += "    - " + theme + "\n";
+                }
+            }
+            
+            terminal->appendPlainText(helpText);
         }
-        else if (command == "start theme dark")
+        else if (command == "themes")
         {
-            applyDarkTheme();
-            terminal->appendPlainText("Тёмная тема активирована.");
+            QStringList themes = themeManager->getAvailableThemes();
+            if (themes.isEmpty()) {
+                terminal->appendPlainText(languageManager->tr("no_themes", "messages"));
+            } else {
+                terminal->appendPlainText(languageManager->tr("available_themes", "messages"));
+                for (const QString &theme : themes) {
+                    QString description = themeManager->getThemeDescription(theme);
+                    if (!description.isEmpty()) {
+                        terminal->appendPlainText("  - " + theme + ": " + description);
+                    } else {
+                        terminal->appendPlainText("  - " + theme);
+                    }
+                }
+            }
         }
-        else if (command == "start theme light")
+        else if (command == "languages")
         {
-            applyLightTheme();
-            terminal->appendPlainText("Светлая тема активирована.");
+            QStringList languages = languageManager->getAvailableLanguages();
+            terminal->appendPlainText(languageManager->tr("available_languages", "commands"));
+            for (const QString &lang : languages) {
+                QString name = languageManager->getLanguageName(lang);
+                terminal->appendPlainText("  - " + lang + ": " + name);
+            }
         }
-        else if (command == "start theme dark blue")
+        else if (command.startsWith("start theme "))
         {
-            applyDarkBlueTheme();
-            terminal->appendPlainText("Синяя тёмная тема активирована.");
+            QString themeName = command.mid(12); // Убираем "start theme "
+            if (themeManager->themeExists(themeName)) {
+                themeManager->applyTheme(themeName);
+                terminal->appendPlainText(languageManager->tr("theme_activated", QStringList{themeName}, "messages"));
+            } else {
+                terminal->appendPlainText(languageManager->tr("theme_not_found", QStringList{themeName}, "messages"));
+            }
         }
-        else if (command == "start theme dracula")
+        else if (command.startsWith("language "))
         {
-            applyDraculaTheme();
-            terminal->appendPlainText("Тема Dracula активирована.");
+            QString langCode = command.mid(9); // Убираем "language "
+            if (languageManager->languageExists(langCode)) {
+                languageManager->applyLanguage(langCode);
+                updateInterfaceLanguage();
+                terminal->appendPlainText(languageManager->tr("language_changed", "messages") + 
+                                        languageManager->getLanguageName(langCode));
+                
+                // Сохраняем настройки
+                QSettings settings("PablaIDE", "CodeEditor");
+                settings.setValue("language", langCode);
+            } else {
+                terminal->appendPlainText("Язык '" + langCode + "' не найден. Используйте команду 'languages' для списка доступных языков.");
+            }
         }
         else if (command == "build")
         {
             buildProject();
-            terminal->appendPlainText("Проект собран.");
+            terminal->appendPlainText(languageManager->tr("project_built", "messages"));
         }
         else if (command == "run")
         {
             runProject();
-            terminal->appendPlainText("Проект запущен.");
+            terminal->appendPlainText(languageManager->tr("project_started", "messages"));
         }
         else if (command == "clear")
         {
@@ -144,7 +296,7 @@ private slots:
         }
         else
         {
-            terminal->appendPlainText("Неизвестная команда. Введите 'help' для списка команд.");
+            terminal->appendPlainText(languageManager->tr("unknown_command", "messages"));
         }
     }
 
@@ -221,47 +373,39 @@ private slots:
 
     void Setings() // <-- Slot name fixed
     {
-        QString theme;
-        theme = QInputDialog::getItem(this, "Выберите тему", "Выберите тему:",
-                                      {"Тёмная тема", "Светлая тема", "Синяя тёмная тема", "Тема Dracula"}, 0, false);
-
-        if (theme == "Тёмная тема")
-        {
-            applyDarkTheme();
-        }
-        else if (theme == "Светлая тема")
-        {
-            applyLightTheme();
-        }
-        else if (theme == "Синяя тёмная тема")
-        {
-            applyDarkBlueTheme();
-        }
-        else if (theme == "Тема Dracula")
-        {
-            applyDraculaTheme();
-        }
-
-        QString language;
-        language = QInputDialog::getItem(this, "Выберите язык", "Выберите язык:",
-                                         {"Русский", "Английский"}, 0, false);
-        if (language == "Русский")
-        {
-            // setLanguage("Russian");
-        }
-        else if (language == "Английский")
-        {
-            // setLanguage("English");
-        }
-
-        terminal->appendPlainText("Настройки сохранены.");
-
-
         QSettings settings("PablaIDE", "CodeEditor");
-        settings.setValue("lastFolderPath", currentFolder); // <-- Save current folder
-        settings.setValue("theme", theme);
-        terminal->appendPlainText("Настройки сохранены.");
-        loadLastFolder(); // <-- Load last folder
+        QString currentTheme = settings.value("theme", "").toString();
+        QString currentLanguage = settings.value("language", "ru").toString();
+        
+        SettingsDialog dialog(themeManager, languageManager, this);
+        
+        if (dialog.exec() == QDialog::Accepted)
+        {
+            QString selectedTheme = dialog.getSelectedTheme();
+            QString selectedLanguage = dialog.getSelectedLanguage();
+            
+            if (!selectedTheme.isEmpty() && themeManager->themeExists(selectedTheme))
+            {
+                themeManager->applyTheme(selectedTheme);
+                terminal->appendPlainText(languageManager->tr("theme_applied", "messages") + selectedTheme);
+            }
+            
+            if (!selectedLanguage.isEmpty() && languageManager->languageExists(selectedLanguage))
+            {
+                languageManager->applyLanguage(selectedLanguage);
+                updateInterfaceLanguage();
+                terminal->appendPlainText(languageManager->tr("language_changed", "messages") + 
+                                        languageManager->getLanguageName(selectedLanguage));
+            }
+            
+            // Сохраняем настройки
+            settings.setValue("lastFolderPath", currentFolder);
+            settings.setValue("theme", selectedTheme);
+            settings.setValue("language", selectedLanguage);
+            terminal->appendPlainText(languageManager->tr("settings_saved", "messages"));
+        }
+        
+        loadLastFolder();
     }
 
     void loadFile(const QString &fileName)
@@ -317,33 +461,7 @@ private slots:
         process->start("./untitled20");
     }
 
-    void applyDarkTheme()
-    {
-        qApp->setStyleSheet("QTextEdit { background-color: #2b2b2b; color: #ffffff; }"
-                            "QTreeView { background-color: #2b2b2b; color: #ffffff; }"
-                            "QPlainTextEdit { background-color: #2b2b2b; color: #ffffff; }");
-    }
 
-    void applyLightTheme()
-    {
-        qApp->setStyleSheet("QTextEdit { background-color: #ffffff; color: #000000; }"
-                            "QTreeView { background-color: #ffffff; color: #000000; }"
-                            "QPlainTextEdit { background-color: #ffffff; color: #000000; }");
-    }
-
-    void applyDarkBlueTheme()
-    {
-        qApp->setStyleSheet("QTextEdit { background-color: #1e1e2f; color: #dcdcdc; }"
-                            "QTreeView { background-color: #1e1e2f; color: #dcdcdc; }"
-                            "QPlainTextEdit { background-color: #1e1e2f; color: #dcdcdc; }");
-    }
-
-    void applyDraculaTheme()
-    {
-        qApp->setStyleSheet("QTextEdit { background-color:rgb(14, 0, 86); color:rgb(255, 255, 255); }"
-                            "QTreeView { background-color:rgb(14, 0, 86); color:rgb(255, 255, 255); }"
-                            "QPlainTextEdit { background-color:rgb(14, 0, 86); color:rgb(255, 255, 255); }");
-    }
 
 private:
     QTextEdit *editor;
@@ -354,9 +472,44 @@ private:
     QTreeView *fileTree;
     QFileSystemModel *fileModel;
     QPlainTextEdit *terminal;
+    ThemeManager *themeManager;
+    LanguageManager *languageManager;
     QString currentFile;
     QString currentFolder;
+    
+    // Обновление интерфейса при смене языка
+    void updateInterfaceLanguage();
 };
+
+void CodeEditor::updateInterfaceLanguage()
+{
+    // Обновляем заголовок окна
+    setWindowTitle(languageManager->tr("window_title", "interface"));
+    
+    // Обновляем меню
+    menuBar()->actions().at(0)->setText(languageManager->tr("file_menu", "interface")); // Файл
+    menuBar()->actions().at(0)->menu()->actions().at(0)->setText(languageManager->tr("new_file", "interface")); // Новый файл
+    menuBar()->actions().at(0)->menu()->actions().at(1)->setText(languageManager->tr("open_file", "interface")); // Открыть файл
+    menuBar()->actions().at(0)->menu()->actions().at(2)->setText(languageManager->tr("open_folder", "interface")); // Открыть папку
+    menuBar()->actions().at(0)->menu()->actions().at(3)->setText(languageManager->tr("save_file", "interface")); // Сохранить файл
+    menuBar()->actions().at(0)->menu()->actions().at(4)->setText(languageManager->tr("settings", "interface")); // Настройки
+    
+    // Обновляем заголовки доков
+    fileTreeDock->setWindowTitle(languageManager->tr("file_tree_title", "interface"));
+    
+    // Обновляем плейсхолдер терминала
+    terminal->setPlaceholderText(languageManager->tr("terminal_placeholder", "interface"));
+    
+    // Обновляем панель инструментов
+    QList<QToolBar*> toolBars = findChildren<QToolBar*>();
+    if (!toolBars.isEmpty()) {
+        QToolBar* toolbar = toolBars.first();
+        if (toolbar->actions().size() >= 2) {
+            toolbar->actions().at(0)->setText(languageManager->tr("build", "interface")); // Собрать
+            toolbar->actions().at(1)->setText(languageManager->tr("run", "interface")); // Запустить
+        }
+    }
+}
 
 int main(int argc, char *argv[])
 {
